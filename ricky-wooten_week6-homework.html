@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>U.S. Military Force Size and Recruiting, FY1973–FY2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F3; --ink:#14202B; --steel:#5E6C78; --rule:#D5D9D4; --panel:#FFFFFF;
+  --met:#2F6B4F; --missed:#B5651D;
+  --army:#5A6328; --navy:#1F3A5F; --usmc:#9B2A22; --af:#3A78B5; --sf:#7A7F8C; --res:#8A6F3D;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#151B21; --ink:#E7EAE6; --steel:#9AA7B2; --rule:#2C353D; --panel:#1B232A;
+    --met:#5FA883; --missed:#E09A52;
+    --army:#A3AE5E; --navy:#7FA3D1; --usmc:#E0736A; --af:#76B3EA; --sf:#B5B9C4; --res:#C9A86A;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:17px;line-height:1.55;font-variant-numeric:tabular-nums}
+.wrap{max-width:1120px;margin:0 auto;padding:48px 24px 72px}
+h1{font-size:clamp(2rem,4.6vw,3.4rem);line-height:1.08;font-weight:800;letter-spacing:-0.02em;margin:0 0 16px;max-width:20ch}
+h2{font-size:1.6rem;font-weight:800;letter-spacing:-0.01em;margin:0 0 8px}
+h3{font-size:1.05rem;font-weight:600;margin:28px 0 8px}
+p{max-width:72ch;margin:0 0 14px}
+.lede{font-size:1.15rem;color:var(--steel);max-width:62ch}
+section{border-top:2px solid var(--ink);padding-top:28px;margin-top:56px}
+.chart{position:relative;height:380px;margin:24px 0 8px}
+.chart.tall{height:460px}
+.cap{font-size:.88rem;color:var(--steel);max-width:80ch}
+.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;margin:28px 0 0}
+.fig b{display:block;font-size:2.1rem;font-weight:800;line-height:1.1}
+.fig span{font-size:.92rem;color:var(--steel)}
+.scroll{overflow-x:auto;margin:16px 0;border:1px solid var(--rule);background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--rule);white-space:nowrap}
+th{font-weight:600;position:sticky;top:0;background:var(--panel)}
+td.wrap,th.wrap{white-space:normal;min-width:260px}
+th:first-child,td:first-child,.l{text-align:left}
+td.met{color:var(--met);font-weight:600}
+td.missed{color:var(--missed);font-weight:600}
+td.na{color:var(--steel)}
+ul{max-width:76ch;padding-left:1.2em}
+li{margin:0 0 6px}
+a{color:inherit;text-decoration-thickness:1px;text-underline-offset:3px}
+a:focus-visible{outline:2px solid var(--af);outline-offset:2px}
+footer{margin-top:56px;font-size:.88rem;color:var(--steel)}
+.legend-key{display:inline-block;width:10px;height:10px;margin-right:6px;vertical-align:baseline}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<header>
+  <h1>The active-duty military is 42% smaller than when the draft ended.</h1>
+  <p class="lede">Actual end strength on September 30 of each fiscal year, all branches, from FY1973 (the first year of the all-volunteer force) through FY2024. Built from public, unclassified sources only.</p>
+  <div class="figs" id="figs"></div>
+  <div class="chart tall"><canvas id="activeChart" role="img" aria-label="Line chart of active-duty end strength by branch, FY1973 to FY2024"></canvas></div>
+  <p class="cap">Breaks in a line are missing years, not zero. FY2023 has not been collected yet, so FY2024 shows as a single dot. Space Force personnel were counted in the Air Force line until FY2022.</p>
+</header>
+
+<section aria-labelledby="rec">
+  <h2 id="rec">Recruiting: goal versus result</h2>
+  <p>Enlisted recruiting goal and number achieved for each service and year collected so far. DoD called FY2023 the toughest recruiting year since the all-volunteer force began; by FY2025 every active-duty service made its goal.</p>
+  <div class="chart"><canvas id="recChart" role="img" aria-label="Bar chart of percent of recruiting goal achieved by service and year"></canvas></div>
+  <p class="cap"><span class="legend-key" style="background:var(--met)"></span>Met goal &nbsp; <span class="legend-key" style="background:var(--missed)"></span>Missed goal. The dashed line marks 100%.</p>
+  <div class="scroll"><table id="recTable"></table></div>
+</section>
+
+<section aria-labelledby="auth">
+  <h2 id="auth">Authorized versus actual strength</h2>
+  <p>Congress sets a ceiling (authorized strength) each year; services then recruit and retain toward it. This compares the two where both numbers are on file, sorted from furthest under to closest.</p>
+  <div class="scroll"><table id="avaTable"></table></div>
+</section>
+
+<section aria-labelledby="total">
+  <h2 id="total">Active and reserve totals</h2>
+  <div class="chart"><canvas id="totalChart" role="img" aria-label="Line chart of total active and total Selected Reserve plus Guard end strength"></canvas></div>
+  <p class="cap">Reserve figures begin in FY1997 in the source data. "Reserve + Guard" is the Selected Reserve, which excludes the Individual Ready Reserve.</p>
+  <h3>Last ten years by branch and component</h3>
+  <div class="scroll"><table id="recentTable"></table></div>
+</section>
+
+<section aria-labelledby="gaps">
+  <h2 id="gaps">What's not here yet</h2>
+  <p>Missing numbers are left blank rather than estimated.</p>
+  <ul>
+    <li>FY2023 and FY2025 end-strength actuals (published in the FY2025 and FY2027 DoD budget Overview Books).</li>
+    <li>Coast Guard end strength for all years. Coast Guard recruiting is included for FY2025.</li>
+    <li>Recruiting goals before FY2023, most Reserve and Guard goals, and exact FY2024 Air Force and Marine Corps totals (both met their goals).</li>
+    <li>FY2026 results. The fiscal year closes September 30, 2026, and year-end numbers usually come out in October.</li>
+    <li>Recruit demographics and state-by-state representation.</li>
+  </ul>
+</section>
+
+<section aria-labelledby="src">
+  <h2 id="src">Sources and definitions</h2>
+  <ul>
+    <li>End strength FY1973–FY2021: Office of People Analytics, <em>Population Representation in the Military Services</em>, Table D-39 (DMDC data).</li>
+    <li>End strength FY2022 and FY2024: DoD FY2026 Defense Budget Overview, end-strength table, actuals columns.</li>
+    <li>Authorized strength: Congressional Research Service Insights IN12651 and IN12652, and DoD budget overviews.</li>
+    <li>Recruiting FY2025: Department of War, "FY25 Sees Best Recruiting Numbers in 15 Years" (Dec. 2025); U.S. Coast Guard press release (Nov. 7, 2025).</li>
+    <li>Recruiting FY2023–FY2024: Army.mil and Navy.mil releases; Military.com and National Guard Association reporting.</li>
+  </ul>
+  <p class="cap">End strength is the actual headcount on September 30. Authorized strength is the ceiling Congress sets. Sources before FY2022 combine Army and Air Force Guard with their Reserves. Army FY2023 counts accessions; the Army also reported about 55,000 contracts including its delayed-entry pool.</p>
+</section>
+
+<footer>Data and code: the military-recruiting-research skill in this repository. Last updated September 2026.</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const D = {"years": [1973, 1974, 1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024], "active": {"Army": [786225, 771526, 770891, 778309, 777744, 766917, 754428, 772376, 776582, 775884, 775260, 775728, 776050, 776852, 776661, 767468, 765287, 728345, 706217, 606124, 568529, 536519, 504948, 487649, 487648, 480734, 473652, 479026, 476289, 484551, 493563, 494291, 486483, 502790, 517783, 539675, 549015, 561979, 561437, 546057, 528070, 504330, 487366, 471271, 472047, 471990, 479785, 481254, 482416, 465625, null, 449816], "Navy": [551274, 545506, 526740, 524617, 524883, 524915, 518627, 521710, 534773, 547152, 552041, 558745, 566283, 576420, 584625, 586830, 586600, 573737, 565446, 536800, 505275, 463465, 429630, 411850, 390490, 377117, 368179, 367371, 371849, 379457, 376970, 368217, 357859, 345098, 332269, 326684, 324239, 323139, 320141, 314339, 319839, 321599, 323334, 320101, 319492, 325395, 332528, 341996, 343223, 344441, null, 332336], "Marine Corps": [189874, 192765, 195784, 191846, 191845, 190737, 185095, 188483, 190691, 194266, 195047, 196284, 198082, 198860, 199708, 197388, 196817, 196353, 193687, 184376, 178535, 174217, 176003, 176423, 173936, 173055, 172635, 172955, 172739, 173897, 177583, 177021, 179840, 180252, 186425, 198415, 203075, 202612, 201026, 198820, 195848, 187891, 183417, 183501, 184401, 185415, 186009, 180958, 179678, 174567, null, 173096], "Air Force": [671314, 622771, 597218, 569118, 566126, 565311, 555083, 554103, 566839, 579038, 588322, 592671, 597004, 603717, 602584, 571983, 566530, 530865, 506026, 466059, 440202, 422321, 413424, 385720, 374215, 363480, 356407, 351326, 348290, 364215, 370945, 372620, 349369, 344529, 329094, 322900, 328847, 329640, 328821, 328812, 326573, 312453, 307326, 313723, 318580, 321618, 327878, 329614, 328888, 324363, null, 315958], "Space Force": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 8061, null, 9446]}, "total": [2198687, 2132568, 2090633, 2063890, 2060598, 2047880, 2013233, 2036672, 2068885, 2096340, 2110670, 2123428, 2137419, 2155849, 2163578, 2123669, 2115234, 2029300, 1971376, 1793359, 1692541, 1596522, 1524005, 1461642, 1426289, 1394386, 1370873, 1370678, 1369167, 1402120, 1419061, 1412149, 1373551, 1372669, 1365571, 1387674, 1405176, 1417370, 1411425, 1388028, 1370330, 1326273, 1301443, 1288596, 1294520, 1304418, 1326200, 1333822, 1334205, 1317057, null, 1280652], "reserve": [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, 902213, 881491, 870917, 865242, 867422, 874326, 875072, 851395, 820818, 825985, 828479, 838278, 845888, 849319, 847934, 840320, 834510, 824378, 819062, 811732, 808895, 796716, 801325, 795955, 793808, 766731, null, 754403], "rec": [{"fiscal_year": 2023, "branch": "Air Force", "component": "Active", "goal": 26877, "achieved": 24100, "pct_of_goal": 89.7, "result": "MISSED", "source": "Military.com (Oct 2023); NGAUS", "note": "Active-duty enlisted; first miss since 1999"}, {"fiscal_year": 2023, "branch": "Air Force", "component": "Guard", "goal": 11745, "achieved": 7120, "pct_of_goal": 60.6, "result": "MISSED", "source": "Military.com (Oct 2023)", "note": "Air National Guard enlisted"}, {"fiscal_year": 2023, "branch": "Air Force", "component": "Reserve", "goal": 7765, "achieved": 5288, "pct_of_goal": 68.1, "result": "MISSED", "source": "NGAUS, Recruiting Continues to Be Challenging, citing Military.com", "note": "Enlisted"}, {"fiscal_year": 2023, "branch": "Army", "component": "Active", "goal": 65000, "achieved": 50181, "pct_of_goal": 77.2, "result": "MISSED", "source": "Army.mil, Army exceeds FY 2024 active duty recruiting goals (Nov 2024) for accessions; goal per Military.com (Oct 2023)", "note": "Enlisted accessions. ~55,000 contracts incl. 4,661 DEP; some sources give goal as 65,500"}, {"fiscal_year": 2023, "branch": "Army", "component": "Reserve", "goal": 14650, "achieved": 9319, "pct_of_goal": 63.6, "result": "MISSED", "source": "Military.com (Oct 2023), citing Army officials", "note": "Enlisted"}, {"fiscal_year": 2023, "branch": "Navy", "component": "Active", "goal": 37700, "achieved": 30236, "pct_of_goal": 80.2, "result": "MISSED", "source": "Military.com, None of It Saved the Military from a Recruiting Crisis in 2023 (Oct 2023)", "note": "Active-duty enlisted"}, {"fiscal_year": 2024, "branch": "Army", "component": "Active", "goal": 55000, "achieved": 55300, "pct_of_goal": 100.5, "result": "MET", "source": "Army.mil, Army exceeds FY 2024 active duty recruiting goals", "note": "Army said at least 55,300 accessions; goal lowered from FY23"}, {"fiscal_year": 2024, "branch": "Navy", "component": "Active", "goal": 40600, "achieved": 40978, "pct_of_goal": 100.9, "result": "MET", "source": "Navy.mil press release, Navy & Marine Corps Exceeded FY24 Recruiting Goals (Oct 1 2024)", "note": "Contracts"}, {"fiscal_year": 2025, "branch": "Air Force", "component": "Active", "goal": 30100, "achieved": 30166, "pct_of_goal": 100.2, "result": "MET", "source": "War.gov, FY25 Sees Best Recruiting Numbers in 15 Years (Dec 2025)", "note": "Active-duty accessions"}, {"fiscal_year": 2025, "branch": "Army", "component": "Active", "goal": 61000, "achieved": 62050, "pct_of_goal": 101.7, "result": "MET", "source": "War.gov, FY25 Sees Best Recruiting Numbers in 15 Years (Dec 2025)", "note": "Active-duty accessions"}, {"fiscal_year": 2025, "branch": "Coast Guard", "component": "Active", "goal": 4300, "achieved": 5204, "pct_of_goal": 121.0, "result": "MET", "source": "USCG press release, Coast Guard exceeds FY2025 recruiting goals (Nov 7 2025)", "note": "Active-duty enlisted accessions"}, {"fiscal_year": 2025, "branch": "Coast Guard", "component": "Reserve", "goal": 750, "achieved": 777, "pct_of_goal": 103.6, "result": "MET", "source": "USCG press release (Nov 7 2025)", "note": "Reserve accessions"}, {"fiscal_year": 2025, "branch": "Marine Corps", "component": "Active", "goal": 26600, "achieved": 26600, "pct_of_goal": 100.0, "result": "MET", "source": "War.gov, FY25 Sees Best Recruiting Numbers in 15 Years (Dec 2025)", "note": "DoD accession metric; USMC reported a broader enlisted mission (active+reserve) separately"}, {"fiscal_year": 2025, "branch": "Navy", "component": "Active", "goal": 40600, "achieved": 44096, "pct_of_goal": 108.6, "result": "MET", "source": "War.gov, FY25 Sees Best Recruiting Numbers in 15 Years (Dec 2025)", "note": "Active-duty accessions"}, {"fiscal_year": 2025, "branch": "Space Force", "component": "Active", "goal": 796, "achieved": 819, "pct_of_goal": 102.9, "result": "MET", "source": "War.gov, FY25 Sees Best Recruiting Numbers in 15 Years (Dec 2025)", "note": "Active-duty accessions"}], "ava": [{"fiscal_year": 2014, "branch": "Army", "component": "Reserve+Guard", "authorized": 559200, "end_strength": 549510, "gap": -9690, "pct_of_authorized": 98.3}, {"fiscal_year": 2014, "branch": "Marine Corps", "component": "Reserve", "authorized": 39600, "end_strength": 39450, "gap": -150, "pct_of_authorized": 99.6}, {"fiscal_year": 2014, "branch": "Air Force", "component": "Reserve+Guard", "authorized": 175800, "end_strength": 176164, "gap": 364, "pct_of_authorized": 100.2}, {"fiscal_year": 2014, "branch": "Navy", "component": "Reserve", "authorized": 59100, "end_strength": 59254, "gap": 154, "pct_of_authorized": 100.3}, {"fiscal_year": 2015, "branch": "Marine Corps", "component": "Reserve", "authorized": 39200, "end_strength": 38906, "gap": -294, "pct_of_authorized": 99.2}, {"fiscal_year": 2015, "branch": "Army", "component": "Reserve+Guard", "authorized": 552200, "end_strength": 548575, "gap": -3625, "pct_of_authorized": 99.3}, {"fiscal_year": 2015, "branch": "Navy", "component": "Reserve", "authorized": 57300, "end_strength": 57359, "gap": 59, "pct_of_authorized": 100.1}, {"fiscal_year": 2015, "branch": "Air Force", "component": "Reserve+Guard", "authorized": 172100, "end_strength": 174222, "gap": 2122, "pct_of_authorized": 101.2}, {"fiscal_year": 2016, "branch": "Marine Corps", "component": "Reserve", "authorized": 38900, "end_strength": 38517, "gap": -383, "pct_of_authorized": 99.0}, {"fiscal_year": 2016, "branch": "Army", "component": "Reserve+Guard", "authorized": 540000, "end_strength": 539984, "gap": -16, "pct_of_authorized": 100.0}, {"fiscal_year": 2016, "branch": "Air Force", "component": "Reserve+Guard", "authorized": 174700, "end_strength": 175251, "gap": 551, "pct_of_authorized": 100.3}, {"fiscal_year": 2016, "branch": "Navy", "component": "Reserve", "authorized": 57400, "end_strength": 57980, "gap": 580, "pct_of_authorized": 101.0}, {"fiscal_year": 2017, "branch": "Army", "component": "Reserve+Guard", "authorized": 542000, "end_strength": 537921, "gap": -4079, "pct_of_authorized": 99.2}, {"fiscal_year": 2017, "branch": "Navy", "component": "Reserve", "authorized": 58000, "end_strength": 57824, "gap": -176, "pct_of_authorized": 99.7}, {"fiscal_year": 2017, "branch": "Air Force", "component": "Reserve+Guard", "authorized": 174700, "end_strength": 174468, "gap": -232, "pct_of_authorized": 99.9}, {"fiscal_year": 2017, "branch": "Marine Corps", "component": "Reserve", "authorized": 38500, "end_strength": 38682, "gap": 182, "pct_of_authorized": 100.5}, {"fiscal_year": 2018, "branch": "Army", "component": "Reserve+Guard", "authorized": 543000, "end_strength": 524015, "gap": -18985, "pct_of_authorized": 96.5}, {"fiscal_year": 2018, "branch": "Navy", "component": "Reserve", "authorized": 59000, "end_strength": 58196, "gap": -804, "pct_of_authorized": 98.6}, {"fiscal_year": 2018, "branch": "Marine Corps", "component": "Reserve", "authorized": 38500, "end_strength": 38333, "gap": -167, "pct_of_authorized": 99.6}, {"fiscal_year": 2018, "branch": "Air Force", "component": "Reserve+Guard", "authorized": 176400, "end_strength": 176172, "gap": -228, "pct_of_authorized": 99.9}, {"fiscal_year": 2019, "branch": "Army", "component": "Reserve+Guard", "authorized": 543000, "end_strength": 526692, "gap": -16308, "pct_of_authorized": 97.0}, {"fiscal_year": 2019, "branch": "Air Force", "component": "Reserve+Guard", "authorized": 177100, "end_strength": 176586, "gap": -514, "pct_of_authorized": 99.7}, {"fiscal_year": 2019, "branch": "Marine Corps", "component": "Reserve", "authorized": 38500, "end_strength": 38389, "gap": -111, "pct_of_authorized": 99.7}, {"fiscal_year": 2019, "branch": "Navy", "component": "Reserve", "authorized": 59100, "end_strength": 59658, "gap": 558, "pct_of_authorized": 100.9}, {"fiscal_year": 2020, "branch": "Marine Corps", "component": "Reserve", "authorized": 38500, "end_strength": 35501, "gap": -2999, "pct_of_authorized": 92.2}, {"fiscal_year": 2020, "branch": "Air Force", "component": "Reserve+Guard", "authorized": 177800, "end_strength": 176470, "gap": -1330, "pct_of_authorized": 99.3}, {"fiscal_year": 2020, "branch": "Army", "component": "Reserve+Guard", "authorized": 525500, "end_strength": 524832, "gap": -668, "pct_of_authorized": 99.9}, {"fiscal_year": 2020, "branch": "Navy", "component": "Reserve", "authorized": 59000, "end_strength": 59152, "gap": 152, "pct_of_authorized": 100.3}, {"fiscal_year": 2021, "branch": "Marine Corps", "component": "Reserve", "authorized": 38500, "end_strength": 35240, "gap": -3260, "pct_of_authorized": 91.5}, {"fiscal_year": 2021, "branch": "Navy", "component": "Reserve", "authorized": 58800, "end_strength": 57632, "gap": -1168, "pct_of_authorized": 98.0}, {"fiscal_year": 2021, "branch": "Army", "component": "Reserve+Guard", "authorized": 526300, "end_strength": 521883, "gap": -4417, "pct_of_authorized": 99.2}, {"fiscal_year": 2021, "branch": "Air Force", "component": "Reserve+Guard", "authorized": 178400, "end_strength": 179053, "gap": 653, "pct_of_authorized": 100.4}, {"fiscal_year": 2022, "branch": "Marine Corps", "component": "Reserve", "authorized": 36800, "end_strength": 32599, "gap": -4201, "pct_of_authorized": 88.6}, {"fiscal_year": 2022, "branch": "Army", "component": "Reserve", "authorized": 189500, "end_strength": 176171, "gap": -13329, "pct_of_authorized": 93.0}, {"fiscal_year": 2022, "branch": "Navy", "component": "Reserve", "authorized": 58600, "end_strength": 55224, "gap": -3376, "pct_of_authorized": 94.2}, {"fiscal_year": 2022, "branch": "Air Force", "component": "Reserve", "authorized": 70300, "end_strength": 68048, "gap": -2252, "pct_of_authorized": 96.8}, {"fiscal_year": 2022, "branch": "Air Force", "component": "Guard", "authorized": 108300, "end_strength": 104984, "gap": -3316, "pct_of_authorized": 96.9}, {"fiscal_year": 2022, "branch": "Army", "component": "Guard", "authorized": 336000, "end_strength": 329705, "gap": -6295, "pct_of_authorized": 98.1}, {"fiscal_year": 2024, "branch": "Air Force", "component": "Reserve", "authorized": 69600, "end_strength": 65679, "gap": -3921, "pct_of_authorized": 94.4}, {"fiscal_year": 2024, "branch": "Navy", "component": "Reserve", "authorized": 57200, "end_strength": 56067, "gap": -1133, "pct_of_authorized": 98.0}, {"fiscal_year": 2024, "branch": "Air Force", "component": "Guard", "authorized": 105000, "end_strength": 103605, "gap": -1395, "pct_of_authorized": 98.7}, {"fiscal_year": 2024, "branch": "Army", "component": "Reserve", "authorized": 174800, "end_strength": 172717, "gap": -2083, "pct_of_authorized": 98.8}, {"fiscal_year": 2024, "branch": "Army", "component": "Guard", "authorized": 325000, "end_strength": 323756, "gap": -1244, "pct_of_authorized": 99.6}, {"fiscal_year": 2024, "branch": "Marine Corps", "component": "Reserve", "authorized": 32000, "end_strength": 32579, "gap": 579, "pct_of_authorized": 101.8}], "recent": [{"fiscal_year": 2014, "Army Active": 504330.0, "Army Reserve": null, "Army Guard": null, "Army Reserve+Guard": 549510.0, "Navy Active": 321599.0, "Navy Reserve": 59254.0, "Marine Corps Active": 187891.0, "Marine Corps Reserve": 39450.0, "Air Force Active": 312453.0, "Air Force Reserve": null, "Air Force Guard": null, "Air Force Reserve+Guard": 176164.0, "Space Force Active": null, "Total Active": 1326273, "Total Reserve+Guard": 824378.0, "Grand Total": 2150651.0}, {"fiscal_year": 2015, "Army Active": 487366.0, "Army Reserve": null, "Army Guard": null, "Army Reserve+Guard": 548575.0, "Navy Active": 323334.0, "Navy Reserve": 57359.0, "Marine Corps Active": 183417.0, "Marine Corps Reserve": 38906.0, "Air Force Active": 307326.0, "Air Force Reserve": null, "Air Force Guard": null, "Air Force Reserve+Guard": 174222.0, "Space Force Active": null, "Total Active": 1301443, "Total Reserve+Guard": 819062.0, "Grand Total": 2120505.0}, {"fiscal_year": 2016, "Army Active": 471271.0, "Army Reserve": null, "Army Guard": null, "Army Reserve+Guard": 539984.0, "Navy Active": 320101.0, "Navy Reserve": 57980.0, "Marine Corps Active": 183501.0, "Marine Corps Reserve": 38517.0, "Air Force Active": 313723.0, "Air Force Reserve": null, "Air Force Guard": null, "Air Force Reserve+Guard": 175251.0, "Space Force Active": null, "Total Active": 1288596, "Total Reserve+Guard": 811732.0, "Grand Total": 2100328.0}, {"fiscal_year": 2017, "Army Active": 472047.0, "Army Reserve": null, "Army Guard": null, "Army Reserve+Guard": 537921.0, "Navy Active": 319492.0, "Navy Reserve": 57824.0, "Marine Corps Active": 184401.0, "Marine Corps Reserve": 38682.0, "Air Force Active": 318580.0, "Air Force Reserve": null, "Air Force Guard": null, "Air Force Reserve+Guard": 174468.0, "Space Force Active": null, "Total Active": 1294520, "Total Reserve+Guard": 808895.0, "Grand Total": 2103415.0}, {"fiscal_year": 2018, "Army Active": 471990.0, "Army Reserve": null, "Army Guard": null, "Army Reserve+Guard": 524015.0, "Navy Active": 325395.0, "Navy Reserve": 58196.0, "Marine Corps Active": 185415.0, "Marine Corps Reserve": 38333.0, "Air Force Active": 321618.0, "Air Force Reserve": null, "Air Force Guard": null, "Air Force Reserve+Guard": 176172.0, "Space Force Active": null, "Total Active": 1304418, "Total Reserve+Guard": 796716.0, "Grand Total": 2101134.0}, {"fiscal_year": 2019, "Army Active": 479785.0, "Army Reserve": null, "Army Guard": null, "Army Reserve+Guard": 526692.0, "Navy Active": 332528.0, "Navy Reserve": 59658.0, "Marine Corps Active": 186009.0, "Marine Corps Reserve": 38389.0, "Air Force Active": 327878.0, "Air Force Reserve": null, "Air Force Guard": null, "Air Force Reserve+Guard": 176586.0, "Space Force Active": null, "Total Active": 1326200, "Total Reserve+Guard": 801325.0, "Grand Total": 2127525.0}, {"fiscal_year": 2020, "Army Active": 481254.0, "Army Reserve": null, "Army Guard": null, "Army Reserve+Guard": 524832.0, "Navy Active": 341996.0, "Navy Reserve": 59152.0, "Marine Corps Active": 180958.0, "Marine Corps Reserve": 35501.0, "Air Force Active": 329614.0, "Air Force Reserve": null, "Air Force Guard": null, "Air Force Reserve+Guard": 176470.0, "Space Force Active": null, "Total Active": 1333822, "Total Reserve+Guard": 795955.0, "Grand Total": 2129777.0}, {"fiscal_year": 2021, "Army Active": 482416.0, "Army Reserve": null, "Army Guard": null, "Army Reserve+Guard": 521883.0, "Navy Active": 343223.0, "Navy Reserve": 57632.0, "Marine Corps Active": 179678.0, "Marine Corps Reserve": 35240.0, "Air Force Active": 328888.0, "Air Force Reserve": null, "Air Force Guard": null, "Air Force Reserve+Guard": 179053.0, "Space Force Active": null, "Total Active": 1334205, "Total Reserve+Guard": 793808.0, "Grand Total": 2128013.0}, {"fiscal_year": 2022, "Army Active": 465625.0, "Army Reserve": 176171.0, "Army Guard": 329705.0, "Army Reserve+Guard": null, "Navy Active": 344441.0, "Navy Reserve": 55224.0, "Marine Corps Active": 174567.0, "Marine Corps Reserve": 32599.0, "Air Force Active": 324363.0, "Air Force Reserve": 68048.0, "Air Force Guard": 104984.0, "Air Force Reserve+Guard": null, "Space Force Active": 8061.0, "Total Active": 1317057, "Total Reserve+Guard": 766731.0, "Grand Total": 2083788.0}, {"fiscal_year": 2024, "Army Active": 449816.0, "Army Reserve": 172717.0, "Army Guard": 323756.0, "Army Reserve+Guard": null, "Navy Active": 332336.0, "Navy Reserve": 56067.0, "Marine Corps Active": 173096.0, "Marine Corps Reserve": 32579.0, "Air Force Active": 315958.0, "Air Force Reserve": 65679.0, "Air Force Guard": 103605.0, "Air Force Reserve+Guard": null, "Space Force Active": 9446.0, "Total Active": 1280652, "Total Reserve+Guard": 754403.0, "Grand Total": 2035055.0}], "recentCols": ["fiscal_year", "Army Active", "Army Reserve", "Army Guard", "Army Reserve+Guard", "Navy Active", "Navy Reserve", "Marine Corps Active", "Marine Corps Reserve", "Air Force Active", "Air Force Reserve", "Air Force Guard", "Air Force Reserve+Guard", "Space Force Active", "Total Active", "Total Reserve+Guard", "Grand Total"]};
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt = v => (v === null || v === undefined || v === '' || Number.isNaN(v)) ? '—' : Number(v).toLocaleString('en-US');
+const BR = {Army:'--army', Navy:'--navy', 'Marine Corps':'--usmc', 'Air Force':'--af', 'Space Force':'--sf'};
+
+// headline figures
+(() => {
+  const t = D.total, y = D.years;
+  const last = t.reduce((a,v,i)=> v!==null ? i : a, 0);
+  const pct = Math.round((1 - t[last]/t[0])*100);
+  const r25 = D.rec.filter(r=>r.fiscal_year===2025 && r.component==='Active' && r.branch!=='Coast Guard');
+  const g = r25.reduce((s,r)=>s+r.goal,0), a = r25.reduce((s,r)=>s+r.achieved,0);
+  document.getElementById('figs').innerHTML = `
+    <div class="fig"><b>${fmt(t[0])}</b><span>active duty, FY${y[0]}</span></div>
+    <div class="fig"><b>${fmt(t[last])}</b><span>active duty, FY${y[last]} (${pct}% smaller)</span></div>
+    <div class="fig"><b>${fmt(a)}</b><span>FY2025 active-duty recruits against a goal of ${fmt(g)}</span></div>`;
+})();
+
+// tables
+function table(id, cols, rows){
+  const el = document.getElementById(id);
+  el.innerHTML = '<thead><tr>' + cols.map(c=>`<th scope="col" class="${c.cls?c.cls({}):''}">${c.label}</th>`).join('') + '</tr></thead><tbody>' +
+    rows.map(r=>'<tr>'+cols.map(c=>{const v=c.get(r);return `<td class="${c.cls?c.cls(r):''}">${v}</td>`}).join('')+'</tr>').join('') + '</tbody>';
+}
+const recRows = [...D.rec].sort((a,b)=>b.fiscal_year-a.fiscal_year || a.branch.localeCompare(b.branch));
+table('recTable', [
+  {label:'Fiscal year', get:r=>'FY'+r.fiscal_year},
+  {label:'Service', get:r=>r.branch, cls:()=> 'l'},
+  {label:'Component', get:r=>r.component==='Guard'?'National Guard':r.component, cls:()=> 'l'},
+  {label:'Goal', get:r=>fmt(r.goal)},
+  {label:'Achieved', get:r=>fmt(r.achieved)},
+  {label:'% of goal', get:r=>r.pct_of_goal===''?'—':r.pct_of_goal.toFixed(1)+'%'},
+  {label:'Result', get:r=>r.result==='MET'?'Met':r.result==='MISSED'?'Missed':'Unknown', cls:r=>r.result==='MET'?'met':r.result==='MISSED'?'missed':'na'},
+  {label:'Source', get:r=>r.source, cls:()=> 'l wrap'}
+], recRows);
+table('avaTable', [
+  {label:'Fiscal year', get:r=>'FY'+r.fiscal_year},
+  {label:'Service', get:r=>r.branch, cls:()=> 'l'},
+  {label:'Component', get:r=>r.component, cls:()=> 'l'},
+  {label:'Authorized', get:r=>fmt(r.authorized)},
+  {label:'Actual', get:r=>fmt(r.end_strength)},
+  {label:'Difference', get:r=>(r.gap>0?'+':'')+fmt(r.gap), cls:r=>r.gap<0?'missed':'met'},
+  {label:'% of authorized', get:r=>r.pct_of_authorized.toFixed(1)+'%'}
+], [...D.ava].sort((a,b)=>a.pct_of_authorized-b.pct_of_authorized));
+table('recentTable', D.recentCols.map(c=>({label:c==='fiscal_year'?'Fiscal year':c, get:r=>c==='fiscal_year'?'FY'+r[c]:fmt(r[c])})), D.recent);
+
+// charts (tables above still work if the chart library fails to load)
+if (window.Chart) {
+  Chart.defaults.font.family = '"Public Sans", system-ui, sans-serif';
+  Chart.defaults.color = css('--steel');
+  Chart.defaults.borderColor = css('--rule');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const base = {responsive:true, maintainAspectRatio:false, animation: reduce ? false : {duration:600},
+    interaction:{mode:'index', intersect:false},
+    plugins:{tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fmt(c.parsed.y)}`}}}};
+  const thousands = {ticks:{callback:v=>(v/1000).toLocaleString()+'K'}};
+
+  new Chart(document.getElementById('activeChart'), {type:'line',
+    data:{labels:D.years.map(y=>'FY'+y), datasets:Object.entries(D.active).map(([k,v])=>({
+      label:k, data:v, borderColor:css(BR[k]), backgroundColor:css(BR[k]), borderWidth:2.5, spanGaps:false, pointRadius:ctx=>{const i=ctx.dataIndex;return (v[i]!==null&&(v[i-1]==null)&&(v[i+1]==null))?4:0}}))},
+    options:{...base, scales:{y:{...thousands, beginAtZero:true}, x:{ticks:{maxTicksLimit:12}}}}});
+
+  new Chart(document.getElementById('totalChart'), {type:'line',
+    data:{labels:D.years.map(y=>'FY'+y), datasets:[
+      {label:'Active (all branches)', data:D.total, borderColor:css('--ink'), backgroundColor:css('--ink'), borderWidth:2.5, pointRadius:0, spanGaps:false},
+      {label:'Selected Reserve + Guard', data:D.reserve, borderColor:css('--res'), backgroundColor:css('--res'), borderWidth:2.5, pointRadius:0, spanGaps:false}]},
+    options:{...base, scales:{y:{...thousands, beginAtZero:true}, x:{ticks:{maxTicksLimit:12}}}}});
+
+  const rr = [...D.rec].filter(r=>r.pct_of_goal!=='').sort((a,b)=>a.fiscal_year-b.fiscal_year || a.branch.localeCompare(b.branch));
+  const hundred = {id:'hundred', afterDatasetsDraw(ch){const x=ch.scales.x.getPixelForValue(100), {top,bottom}=ch.chartArea, c=ch.ctx;
+    c.save(); c.setLineDash([5,4]); c.strokeStyle=css('--ink'); c.beginPath(); c.moveTo(x,top); c.lineTo(x,bottom); c.stroke(); c.restore();}};
+  const rc = document.getElementById('recChart'); rc.parentElement.style.height = Math.max(380, rr.length*28+80)+'px';
+  new Chart(rc, {type:'bar', plugins:[hundred],
+    data:{labels:rr.map(r=>`FY${r.fiscal_year} ${r.component==='Guard'&&r.branch==='Air Force'?'Air National Guard':r.branch+(r.component==='Active'?'':' '+r.component)}`),
+      datasets:[{label:'% of goal', data:rr.map(r=>r.pct_of_goal),
+        backgroundColor:rr.map(r=>css(r.result==='MET'?'--met':'--missed'))}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:reduce?false:{duration:600},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>{const r=rr[c.dataIndex];return `${fmt(r.achieved)} of ${fmt(r.goal)} (${r.pct_of_goal}%)`}}}},
+      scales:{x:{min:0, max:125, ticks:{callback:v=>v+'%'}}}}});
+}
+</script>
+</body>
+</html>
