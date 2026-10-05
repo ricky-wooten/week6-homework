@@ -35,7 +35,7 @@ If the user asks just one of these questions, Claude answers only that one. A ge
   - Every number must record its source so it can be checked later.
   - Keep *actual* end strength (the real headcount on Sept 30) separate from *authorized* end strength (the limit Congress sets).
   - Record only figures labeled "Actual" in budget documents, not projections or requests.
-- **Produces ready-to-use outputs.** Each run delivers a short chat summary of key findings, formatted tables, spreadsheet (CSV) files, a written report, and two charts.
+- **Produces ready-to-use outputs.** Each run delivers a short chat summary of key findings, an interactive webpage dashboard, formatted tables, spreadsheet (CSV) files, a written report, and two charts.
 - **Reports its own gaps.** The skill automatically lists which years or branches still lack data, so the user always knows what's missing.
 
 ## How it works (step by step)
@@ -44,8 +44,21 @@ If the user asks just one of these questions, Claude answers only that one. A ge
 2. **Find the gaps:** a script checks which fiscal years and branches are missing data.
 3. **Research the gaps** using web search, guided by a reference guide that says exactly where each number is published and which traps to avoid.
 4. **Record each new number** with a helper script that blocks duplicates, misspelled branch names, and rows without a source.
-5. **Rebuild the report:** a second script regenerates every table and chart.
-6. **Deliver** a summary, the tables, and the updated files to the user, with sources cited.
+5. **Rebuild the report:** a second script regenerates every table, chart, and the `dashboard.html` webpage.
+6. **Deliver** a summary, the dashboard (required on every run), the tables, and the updated files to the user, with sources cited.
+
+## The dashboard webpage
+
+Every run produces **`dashboard.html`**, a single self-contained webpage. Its styling (CSS), interactive behavior (JavaScript), and data are all stored inside that one file, so it opens offline by double-clicking it. No internet connection, server, or other files are needed, and it can be emailed or hosted anywhere as-is.
+
+It includes:
+
+- **Key-figure cards:** current active-duty and Reserve + Guard size, recruiting goals met, and the component furthest below its authorized strength
+- **Interactive charts:** total force over time and active duty by branch; hover for exact values, click the legend to hide or show a line, and breaks in a line mark years with no published data
+- **Sortable, filterable tables** for questions 1–3
+- **A data-gaps list**, so a blank is never mistaken for zero
+
+It adapts to phone screens and to light or dark mode. Questions 4 and 5 are delivered as separate tables because their source data varies in shape from year to year.
 
 ## What's inside the package
 
@@ -58,7 +71,8 @@ military-recruiting-research/
 │   └── sources.md                   Where each number is published, plus known quirks
 ├── scripts/
 │   ├── add_data.py                  Safely adds a new, sourced data row
-│   └── build_report.py              Builds the tables, report, and charts
+│   ├── build_report.py              Builds the tables, report, charts, and dashboard
+│   └── dashboard_template.html      Page design the dashboard is built from
 └── data/
     ├── end_strength.csv             Actual end strength, FY1973–FY2024 (318 rows, with gaps)
     ├── authorized_end_strength.csv  Congressionally authorized end strength (166 rows)
@@ -69,6 +83,7 @@ military-recruiting-research/
 
 | File | Contents |
 |------|----------|
+| `dashboard.html` | Self-contained interactive webpage with charts, tables, and data gaps |
 | `rollup_by_year.csv` | One row per fiscal year, one column per branch/component, with totals |
 | `authorized_vs_actual.csv` | Gap between authorized and actual strength |
 | `recruiting_results.csv` | Goal vs. achieved, with percent of goal and result flag |
@@ -82,7 +97,7 @@ The skill is honest about what it hasn't found yet. Open gaps at the last update
 
 ## How to use it
 
-1. Add `military-recruiting-research.skill` to Claude through its Skills settings.
+1. Add `military-recruiting-research.skill` to Claude through its Skills settings. After downloading a newer version of the file, upload it again; Claude keeps using the old copy until you replace it.
 2. Ask a question in plain language, for example:
    - *"Use my military recruiting skill to update the research."*
    - *"Did every branch make its recruiting goal this year?"*
